@@ -1,6 +1,6 @@
-# Codex Proxy - DeepSeek & MiniMax 接入 Codex CLI
+# CodexBridge
 
-基于 [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) 改造，让 [OpenAI Codex CLI](https://github.com/openai/codex) 支持 DeepSeek、MiniMax 等 OpenAI 兼容模型。
+基于 [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) 微调修改，让 [OpenAI Codex CLI](https://github.com/openai/codex) 支持 DeepSeek、MiniMax 等 OpenAI 兼容模型。
 
 ## 解决了什么问题
 
@@ -17,70 +17,62 @@ Codex CLI 使用 OpenAI Responses API 协议，而 DeepSeek / MiniMax 等提供�
 | DeepSeek | `deepseek-v4-pro`、`deepseek-v4-flash` | 1M |
 | MiniMax | `MiniMax-M2.7` | 204K |
 
-## 快速开始
+## 使用方式
 
-### 方式一：直接运行
+### 直接运行预编译二进制
 
-1. 从 [CLIProxyAPI Releases](https://github.com/router-for-me/CLIProxyAPI/releases) 下载对应平台的二进制
-
-2. 复制配置文件并填入 API Key：
-
-```bash
-cp config.example.yaml config.yaml
-# 编辑 config.yaml，填入你的 API Key
-```
-
-3. 启动：
+下载 `cli-proxy-api` 二进制后，配置 `config.yaml` 即可运行：
 
 ```bash
 ./cli-proxy-api --config config.yaml
 ```
 
-### 方式二：Docker 部署
+### 从项目压缩包(CLIProxyAPI.zip)编译
 
 ```bash
-cp config.example.yaml config.yaml
-# 编辑 config.yaml：
-#   1. 填入 API Key
-#   2. 将 host 改为 '0.0.0.0'
+# 解压 CLIProxyAPI 源码
+unzip CLIProxyAPI.zip -d CLIProxyAPI
+cd CLIProxyAPI
+# 进行源码微调（若需要）
+# ...
+go build -o ../cli-proxy-api ./cmd/server/
+```
 
+### Docker 部署
+
+```bash
 docker compose up -d
 ```
 
-### 方式三：从源码构建
+## 配置
 
-```bash
-git clone https://github.com/router-for-me/CLIProxyAPI.git
-cd CLIProxyAPI
-go build -o cli-proxy-api ./cmd/server/
-./cli-proxy-api --config ../config.yaml
-```
+1. 复制配置模板：`cp config.example.yaml config.yaml`
+2. 编辑 `config.yaml`，填入你的 API Key
+3. Docker 部署时需将 `host` 改为 `0.0.0.0`
 
 ## 配置 Codex CLI
 
-```bash
-# 指向本地代理
-export OPENAI_BASE_URL=http://127.0.0.1:8787/v1
-export OPENAI_API_KEY=anything
+推荐使用 [CC-Switch](https://github.com/Zhang161215/cc-switch) 图形化配置工具，一键管理 Codex、Claude Code、Gemini CLI 等工具的 API 配置：
 
-# 使用 DeepSeek
-codex -m deepseek-v4-pro
+1. 下载 [CC-Switch](https://github.com/Zhang161215/cc-switch)
+2. 选择 "Codex" 分组，点击 + 添加配置
+3. 选择自定义供应商，填入：
+   - API 地址：`http://127.0.0.1:8787/v1`
+   - API Key：`anything`（本地代理无需真实密钥）
+4. 点击启用，在终端运行 `codex` 验证
 
-# 使用 MiniMax
-codex -m MiniMax-M2.7
-```
-
-在 `~/.codex/config.toml` 中设置上下文窗口：
+如需手动配置，编辑 `~/.codex/config.toml`：
 
 ```toml
 model = "deepseek-v4-pro"
 model_context_window = 1000000
+base_url = "http://127.0.0.1:8787/v1"
 ```
 
 ## 致谢
 
-本项目基于 [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) 改造，感谢 [Luis Pater](https://github.com/luispater) 和 [Router-For.ME](https://github.com/router-for-me) 团队的出色工作。CLIProxyAPI 提供了完善的 AI CLI 工具协议转换框架，使得本项目能够专注于 DeepSeek 和 MiniMax 的兼容性适配。
+本项目基于 [CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) 微调修改，感谢 [Luis Pater](https://github.com/luispater) 和 [Router-For.ME](https://github.com/router-for-me) 团队的工作。
 
 ## 许可
 
-[MIT](LICENSE) — 与上游 CLIProxyAPI 保持一致。
+[MIT](LICENSE)
