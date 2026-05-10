@@ -1,0 +1,24 @@
+
+
+# 包含密钥的实际配置（用 config.example.yaml 作为模板）
+config.yaml
+
+# CLIProxyAPI 源码（子模块或构建用，不随项目分发）
+CLIProxyAPI/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+config.yaml
+
+# Docker
+docker-compose
+.override.yml
+
+# 日志
+*.log

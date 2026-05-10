@@ -1,0 +1,66 @@
+# CLIProxyAPI 配置 - AI 模型中转站
+# 将 Codex CLI 的 Responses API 请求转换为 OpenAI 兼容的 Chat Completions
+
+# 监听地址（Docker 部署时改为 0.0.0.0）
+host: '127.0.0.1'
+# 监听端口
+port: 8787
+
+# OAuth 凭据存储目录
+auth-dir: '~/.cli-proxy-api'
+
+# 关闭 API Key 认证（本地使用无需鉴权）
+disable-auth: true
+
+# 开启调试日志（排查问题用，稳定后可改为 false）
+debug: true
+
+# 模型列表不显示提供商前缀（更简洁）
+show-provider-prefixes: false
+
+# 启用统一中间表示翻译器（更好的协议转换兼容性）
+use-canonical-translator: true
+
+openai-compatibility:
+  # ─── DeepSeek ───
+  - name: "deepseek"
+    base-url: "https://api.deepseek.com/v1"
+    api-key-entries:
+      - api-key: "sk-your-deepseek-api-key"
+    models:
+      - name: "deepseek-v4-pro"
+        alias: "deepseek-v4-pro"
+        thinking:
+          levels: ["low", "medium", "high", "max"]
+      - name: "deepseek-v4-flash"
+        alias: "deepseek-v4-flash"
+        thinking:
+          levels: ["low", "medium", "high", "max"]
+
+  # ─── MiniMax ───
+  - name: "minimax"
+    base-url: "https://api.minimaxi.com/v1"
+    api-key-entries:
+      - api-key: "sk-your-minimax-api-key"
+    models:
+      - name: "MiniMax-M2.7"
+        alias: "MiniMax-M2.7"
+
+# 请求载荷配置
+payload:
+  # 默认参数（仅在请求中没有该字段时注入）
+  default:
+    - models:
+        - name: "deepseek-*"
+      params:
+        "thinking.type": "enabled"
+        "reasoning_effort": "high"
+  # 过滤 DeepSeek 思考模式下不支持的参数
+  filter:
+    - models:
+        - name: "deepseek-*"
+      params:
+        - "temperature"
+        - "top_p"
+        - "presence_penalty"
+        - "frequency_penalty"

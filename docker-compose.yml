@@ -1,0 +1,11 @@
+services:
+  proxy:
+    build: .
+    ports:
+      - "8787:8787"
+    volumes:
+      # 挂载配置文件（修改后自动热加载）
+      - ./config.yaml:/etc/cli-proxy-api/config.yaml:ro
+    environment:
+      - TZ=Asia/Shanghai
+    restart: unless-stopped
